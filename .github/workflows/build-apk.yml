@@ -20,10 +20,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # أندرويد SDK بالفعل مثبت مسبقًا على ubuntu-latest، فبس بنوافق على التراخيص
-      # وننزل الحزم المطلوبة بالتحديد بدل الاعتماد على action خارجي غير مستقر
+      # نحدد مكان sdkmanager بالظبط ونضيفه لـ PATH، لأنه مش متاح مباشرة
+      # على كل صور ubuntu-latest بنفس الشكل
+      - name: Locate Android SDK tools
+        run: |
+          echo "ANDROID_HOME is: $ANDROID_HOME"
+          find "$ANDROID_HOME" -iname "sdkmanager" 2>/dev/null
+          SDKMANAGER_DIR=$(find "$ANDROID_HOME/cmdline-tools" -maxdepth 2 -iname "bin" | head -n 1)
+          echo "SDKMANAGER_DIR=$SDKMANAGER_DIR" >> "$GITHUB_ENV"
+
       - name: Accept Android SDK licenses & install required packages
         run: |
+          export PATH="$SDKMANAGER_DIR:$PATH"
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 

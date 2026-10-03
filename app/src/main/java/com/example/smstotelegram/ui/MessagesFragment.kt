@@ -79,7 +79,9 @@ class MessagesFragment : Fragment() {
         }
         val nameInput = EditText(context).apply { hint = "اسم مزود الخدمة (مثال: فودافون كاش)" }
         val recipientInput = EditText(context).apply { hint = "رقم المستلم / رقم الحساب"; inputType = android.text.InputType.TYPE_CLASS_PHONE }
+        val senderInput = EditText(context).apply { hint = "اسم المرسل في الرسائل (مثال: VF-Cash)" }
         layout.addView(nameInput)
+        layout.addView(senderInput)
         layout.addView(recipientInput)
 
         AlertDialog.Builder(context)
@@ -92,8 +94,17 @@ class MessagesFragment : Fragment() {
                     Toast.makeText(context, "لازم تملأ اسم المزود ورقم المستلم", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                Prefs.addProvider(context, Provider(name = name, recipientNumber = recipient))
+                val sender = senderInput.text.toString().trim().ifBlank { name }
+                val provider = Provider(name = name, recipientNumber = recipient, senderId = sender)
+                Prefs.addProvider(context, provider)
                 loadProviders()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val n = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        com.example.smstotelegram.InboxImporter.import(context, provider)
+                    }
+                    if (n > 0) Toast.makeText(context, "تم استيراد $n رسالة قديمة", Toast.LENGTH_SHORT).show()
+                    loadProviders()
+                }
             }
             .setNegativeButton("إلغاء", null)
             .show()

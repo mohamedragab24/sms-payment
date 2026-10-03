@@ -15,6 +15,9 @@ interface MessageDao {
     @androidx.room.Insert
     suspend fun insert(message: MessageEntity)
 
+    @androidx.room.Query("SELECT COUNT(*) FROM messages WHERE timestamp = :ts AND body = :body")
+    suspend fun countExisting(ts: Long, body: String): Int
+
     @androidx.room.Query("SELECT * FROM messages WHERE providerId = :providerId ORDER BY timestamp DESC")
     suspend fun getMessagesForProvider(providerId: String): List<MessageEntity>
 

@@ -8,5 +8,7 @@ data class Provider(
     val name: String,
     // رقم الحساب/المستلم الذي يظهر داخل رسالة SMS
     @SerializedName(value = "recipientNumber", alternate = ["senderPattern"])
-    val recipientNumber: String
+    val recipientNumber: String,
+    // اسم/رقم المرسل كما يظهر في الرسائل (مثال: VF-Cash) - اختياري
+    val senderId: String? = null
 )

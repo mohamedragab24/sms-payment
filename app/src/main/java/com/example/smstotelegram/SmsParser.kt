@@ -1,36 +1,89 @@
 package com.example.smstotelegram
 
 object SmsParser {
-    data class Parsed(val recipientNumber: String, val amount: Double)
 
-    private val amountPatterns = listOf(
-        Regex("(?i)(?:amount|amt|received|deposit|credited|transaction of|مبلغ|استلمت|تم استلام|ايداع|إيداع|تحويل).*?([0-9][0-9,]*(?:\\.[0-9]{1,2})?)"),
-        Regex("(?i)([0-9][0-9,]*(?:\\.[0-9]{1,2})?)\\s*(?:EGP|جنيه|جنية|ج)"),
-        Regex("(?i)(?:EGP|جنيه|جنية|ج)\\s*([0-9][0-9,]*(?:\\.[0-9]{1,2})?)")
-    )
-
-    private val numberRegex = Regex("(?<!\\d)(?:01[0-9]{9}|20[0-9]{8,10}|[0-9]{7,15})(?!\\d)")
-
-    fun findRecipient(body: String, configured: List<String>): String? {
-        val normalized = body.replace("٠", "0").replace("١", "1").replace("٢", "2")
-            .replace("٣", "3").replace("٤", "4").replace("٥", "5").replace("٦", "6")
-            .replace("٧", "7").replace("٨", "8").replace("٩", "9")
-        return configured.firstOrNull { wanted ->
-            val digits = wanted.filter { it.isDigit() }
-            digits.isNotBlank() && normalized.filter { it.isDigit() }.contains(digits)
-        } ?: numberRegex.find(normalized)?.value
+    // ---------- تنظيف النص ----------
+    fun normalizeDigits(s: String): String = buildString {
+        for (c in s) append(
+            when (c) {
+                in '٠'..'٩' -> '0' + (c - '٠')
+                in '۰'..'۹' -> '0' + (c - '۰')
+                '٫' -> '.'
+                else -> c
+            }
+        )
     }
 
+    // ---------- المبلغ ----------
+    private val noise = listOf(
+        // الروابط
+        Regex("(?i)https?://\\S+"),
+        // الرصيد الحالي (مش المبلغ المستلم): "رصيد حسابك ... الحالي 0.90 جنيه"
+        Regex("(?i)(?:رصيد|balance)[^0-9]{0,40}[0-9][0-9,]*(?:\\.[0-9]+)?\\s*(?:EGP|جنيه|جنية|ج)?"),
+        // العروض والكاش باك: "وكمان هيجيلك لحد 100ج كاش باك"
+        Regex("(?i)(?:وزود فرصك|وكمان هيجيلك|كاش ?باك|cashback).*")
+    )
+
+    private val amountPatterns = listOf(
+        Regex("(?i)(?:تم استلام|استلمت|استلام|received|deposit|credited|ايداع|إيداع|تحويل مبلغ|مبلغ|amount|amt)[^0-9]{0,40}([0-9][0-9]*(?:\\.[0-9]{1,2})?)"),
+        Regex("(?i)([0-9][0-9]*(?:\\.[0-9]{1,2})?)\\s*(?:EGP|جنيه|جنية|ج\\b)"),
+        Regex("(?i)(?:EGP|جنيه|جنية)\\s*([0-9][0-9]*(?:\\.[0-9]{1,2})?)")
+    )
+
     fun findAmount(body: String): Double? {
-        val normalized = body.replace("٫", ".").replace(",", "")
-            .replace("٠", "0").replace("١", "1").replace("٢", "2")
-            .replace("٣", "3").replace("٤", "4").replace("٥", "5").replace("٦", "6")
-            .replace("٧", "7").replace("٨", "8").replace("٩", "9")
+        var text = normalizeDigits(body).replace(",", "")
+        for (n in noise) text = n.replace(text, " ")
         for (regex in amountPatterns) {
-            val match = regex.find(normalized) ?: continue
-            val raw = match.groupValues[1].replace(",", "")
-            raw.toDoubleOrNull()?.let { return it }
+            val m = regex.find(text) ?: continue
+            m.groupValues[1].toDoubleOrNull()?.let { return it }
         }
         return null
+    }
+
+    // ---------- تحديد المزود / الحساب ----------
+    private val aliasGroups = listOf(
+        listOf("vfcash", "vodafonecash", "vodafone", "فودافونكاش", "فودافون"),
+        listOf("etisalatcash", "etisalat", "اتصالاتكاش", "اتصالات"),
+        listOf("orangecash", "orange", "اورنجكاش", "اورنج"),
+        listOf("wepay", "we", "وي"),
+        listOf("instapay", "انستاباي"),
+        listOf("fawry", "فوري")
+    )
+
+    private fun key(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+
+    private fun groupOf(s: String): Int? {
+        val k = key(s)
+        if (k.isBlank()) return null
+        return aliasGroups.indexOfFirst { g -> g.any { it == k || (it.length > 3 && k.contains(it)) } }
+            .takeIf { it >= 0 }
+    }
+
+    private fun sameSender(providerName: String, sender: String): Boolean {
+        val a = key(providerName); val b = key(sender)
+        if (a.isBlank() || b.isBlank()) return false
+        if (a == b || (a.length > 3 && b.contains(a)) || (b.length > 3 && a.contains(b))) return true
+        val ga = groupOf(providerName); val gb = groupOf(sender)
+        return ga != null && ga == gb
+    }
+
+    private fun lastDigits(s: String, n: Int = 9): String {
+        val d = normalizeDigits(s).filter { it.isDigit() }
+        return if (d.length > n) d.takeLast(n) else d
+    }
+
+    /** يرجّع المزود المناسب: أولًا بالرقم لو موجود في نص الرسالة، وإلا باسم المرسل (VF-Cash مثلًا). */
+    fun findProvider(sender: String, body: String, providers: List<Provider>): Provider? {
+        // 1) اسم المرسل المحدد للمزود (كل رسائل المرسل ده تتقرأ)
+        providers.firstOrNull {
+            val sid = it.senderId?.let(::key).orEmpty()
+            sid.isNotBlank() && sid == key(sender)
+        }?.let { return it }
+        val bodyDigits = normalizeDigits(body).filter { it.isDigit() }
+        providers.firstOrNull {
+            val d = lastDigits(it.recipientNumber)
+            d.length >= 7 && bodyDigits.contains(d)
+        }?.let { return it }
+        return providers.firstOrNull { sameSender(it.name, sender) }
     }
 }

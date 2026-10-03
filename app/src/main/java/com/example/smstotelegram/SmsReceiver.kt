@@ -17,23 +17,36 @@ class SmsReceiver : BroadcastReceiver() {
         val providers = Prefs.getProviders(context)
         if (providers.isEmpty()) return
         val appContext = context.applicationContext
-        for (sms in Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
-            val sender = sms.originatingAddress ?: "غير معروف"
-            val body = sms.messageBody ?: ""
-            val recipient = SmsParser.findRecipient(body, providers.map { it.recipientNumber }) ?: continue
-            val provider = providers.firstOrNull {
-                it.recipientNumber.filter(Char::isDigit) == recipient.filter(Char::isDigit)
-            } ?: continue
-            val amount = SmsParser.findAmount(body) ?: 0.0
-            val formatted = "رسالة جديدة من ${provider.name}\nرقم الحساب/المستلم: $recipient\nالمبلغ: ${formatAmount(amount)}\nالمرسل: $sender\n\n$body"
-            TelegramSender.send(appContext, formatted)
-            CoroutineScope(Dispatchers.IO).launch {
+
+        // الرسالة الطويلة بتوصل أجزاء، نجمعها قبل التحليل
+        val parts = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+        if (parts.isNullOrEmpty()) return
+        val sender = parts[0].originatingAddress ?: "غير معروف"
+        val body = parts.joinToString("") { it.messageBody ?: "" }
+
+        val provider = SmsParser.findProvider(sender, body, providers)
+        if (provider == null) {
+            Log.w("SmsReceiver", "مفيش مزود مطابق للرسالة من $sender")
+            return
+        }
+        val account = provider.recipientNumber
+        val amount = SmsParser.findAmount(body) ?: 0.0
+
+        val formatted = "رسالة جديدة من ${provider.name}\nرقم الحساب/المستلم: $account\nالمبلغ: ${formatAmount(amount)}\nالمرسل: $sender\n\n$body"
+        TelegramSender.send(appContext, formatted)
+
+        val pending = goAsync()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 AppDatabase.getInstance(appContext).messageDao().insert(
-                    MessageEntity(providerId=provider.id, providerName=provider.name, sender=sender,
-                        recipientNumber=recipient, amount=amount, body=body, timestamp=System.currentTimeMillis())
+                    MessageEntity(providerId = provider.id, providerName = provider.name, sender = sender,
+                        recipientNumber = account, amount = amount, body = body, timestamp = System.currentTimeMillis())
                 )
+            } finally {
+                pending.finish()
             }
         }
     }
-    private fun formatAmount(value: Double) = if (value % 1.0 == 0.0) value.toLong().toString() else String.format("%.2f", value)
+
+    private fun formatAmount(v: Double) = if (v % 1.0 == 0.0) v.toLong().toString() else String.format("%.2f", v)
 }

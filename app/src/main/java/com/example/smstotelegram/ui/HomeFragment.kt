@@ -33,11 +33,12 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val dao = AppDatabase.getInstance(context).messageDao()
             val totalMessages = dao.getTotalMessagesCount()
-            val totalNumbers = dao.getDistinctSendersCount()
+            val totalNumbers = dao.getDistinctAccountsCount()
             val totalProviders = Prefs.getProviders(context).size
 
             binding.tvTotalMessages.text = totalMessages.toString()
             binding.tvTotalNumbers.text = totalNumbers.toString()
+            binding.cardAccounts.setOnClickListener { startActivity(android.content.Intent(requireContext(), AccountStatsActivity::class.java)) }
             binding.tvTotalProviders.text = totalProviders.toString()
         }
     }

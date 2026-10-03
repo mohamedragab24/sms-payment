@@ -17,7 +17,7 @@
         android:id="@+id/tvEmptyState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="لسه مفيش رسائل وصلت من المزود ده"
+        android:text="لسه مفيش حسابات وصلها مبلغ من المزود ده"
         android:gravity="center"
         android:padding="32dp"
         android:visibility="gone" />

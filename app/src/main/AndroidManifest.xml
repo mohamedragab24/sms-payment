@@ -29,6 +29,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.AccountStatsActivity" android:exported="false" />
+
         <activity
             android:name=".ui.ProviderMessagesActivity"
             android:exported="false"

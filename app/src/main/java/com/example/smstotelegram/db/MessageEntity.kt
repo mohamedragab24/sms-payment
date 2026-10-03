@@ -9,6 +9,8 @@ data class MessageEntity(
     val providerId: String,
     val providerName: String,
     val sender: String,
+    val recipientNumber: String,
+    val amount: Double,
     val body: String,
     val timestamp: Long
 )

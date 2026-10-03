@@ -61,10 +61,10 @@ class MessagesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val providers = Prefs.getProviders(context)
             val dao = AppDatabase.getInstance(context).messageDao()
-            val counts = dao.getCountsPerProvider().associateBy { it.providerId }
-
+            val stats = dao.getProviderStats().associateBy { it.providerId }
             val items = providers.map { provider ->
-                ProviderUiItem(provider, counts[provider.id]?.count ?: 0)
+                val st = stats[provider.id]
+                ProviderUiItem(provider, st?.accountCount ?: 0, st?.totalAmount ?: 0.0, st?.transactionCount ?: 0)
             }
             adapter.updateItems(items)
             binding.tvEmptyState.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
@@ -78,21 +78,21 @@ class MessagesFragment : Fragment() {
             setPadding(48, 24, 48, 0)
         }
         val nameInput = EditText(context).apply { hint = "اسم مزود الخدمة (مثال: فودافون كاش)" }
-        val senderInput = EditText(context).apply { hint = "رقم أو اسم المرسل" }
+        val recipientInput = EditText(context).apply { hint = "رقم المستلم / رقم الحساب"; inputType = android.text.InputType.TYPE_CLASS_PHONE }
         layout.addView(nameInput)
-        layout.addView(senderInput)
+        layout.addView(recipientInput)
 
         AlertDialog.Builder(context)
             .setTitle("إضافة مزود خدمة جديد")
             .setView(layout)
             .setPositiveButton("إضافة") { _, _ ->
                 val name = nameInput.text.toString().trim()
-                val sender = senderInput.text.toString().trim()
-                if (name.isBlank() || sender.isBlank()) {
-                    Toast.makeText(context, "لازم تملأ الحقلين", Toast.LENGTH_SHORT).show()
+                val recipient = recipientInput.text.toString().trim()
+                if (name.isBlank() || recipient.isBlank()) {
+                    Toast.makeText(context, "لازم تملأ اسم المزود ورقم المستلم", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                Prefs.addProvider(context, Provider(name = name, senderPattern = sender))
+                Prefs.addProvider(context, Provider(name = name, recipientNumber = recipient))
                 loadProviders()
             }
             .setNegativeButton("إلغاء", null)

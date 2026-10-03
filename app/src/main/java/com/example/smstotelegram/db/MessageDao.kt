@@ -1,29 +1,35 @@
 package com.example.smstotelegram.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+data class ProviderCount(
+    val providerId: String, val providerName: String, val accountCount: Int,
+    val totalAmount: Double, val transactionCount: Int
+)
 
-data class ProviderCount(val providerId: String, val providerName: String, val count: Int)
+data class AccountStat(
+    val providerId: String, val providerName: String, val recipientNumber: String,
+    val totalAmount: Double, val transactionCount: Int
+)
 
-@Dao
+@androidx.room.Dao
 interface MessageDao {
-
-    @Insert
+    @androidx.room.Insert
     suspend fun insert(message: MessageEntity)
 
-    @Query("SELECT * FROM messages WHERE providerId = :providerId ORDER BY timestamp DESC")
+    @androidx.room.Query("SELECT * FROM messages WHERE providerId = :providerId ORDER BY timestamp DESC")
     suspend fun getMessagesForProvider(providerId: String): List<MessageEntity>
 
-    @Query("SELECT COUNT(*) FROM messages")
+    @androidx.room.Query("SELECT COUNT(*) FROM messages")
     suspend fun getTotalMessagesCount(): Int
 
-    @Query("SELECT COUNT(DISTINCT sender) FROM messages")
-    suspend fun getDistinctSendersCount(): Int
+    @androidx.room.Query("SELECT COUNT(DISTINCT recipientNumber) FROM messages WHERE recipientNumber != ''")
+    suspend fun getDistinctAccountsCount(): Int
 
-    @Query(
-        "SELECT providerId, providerName, COUNT(*) as count FROM messages " +
-        "GROUP BY providerId ORDER BY count DESC"
-    )
-    suspend fun getCountsPerProvider(): List<ProviderCount>
+    @androidx.room.Query("SELECT providerId, providerName, COUNT(DISTINCT recipientNumber) as accountCount, COALESCE(SUM(amount),0) as totalAmount, COUNT(*) as transactionCount FROM messages WHERE recipientNumber != '' GROUP BY providerId, providerName ORDER BY accountCount DESC")
+    suspend fun getProviderStats(): List<ProviderCount>
+
+    @androidx.room.Query("SELECT providerId, providerName, recipientNumber, COALESCE(SUM(amount),0) as totalAmount, COUNT(*) as transactionCount FROM messages WHERE recipientNumber != '' GROUP BY providerId, providerName, recipientNumber ORDER BY providerName, recipientNumber")
+    suspend fun getAccountStats(): List<AccountStat>
+
+    @androidx.room.Query("SELECT providerId, providerName, recipientNumber, COALESCE(SUM(amount),0) as totalAmount, COUNT(*) as transactionCount FROM messages WHERE providerId = :providerId AND recipientNumber != '' GROUP BY providerId, providerName, recipientNumber ORDER BY recipientNumber")
+    suspend fun getAccountStatsForProvider(providerId: String): List<AccountStat>
 }

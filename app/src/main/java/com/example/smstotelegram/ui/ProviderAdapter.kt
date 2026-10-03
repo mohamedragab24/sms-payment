@@ -8,7 +8,9 @@ import com.example.smstotelegram.databinding.ItemProviderBinding
 
 data class ProviderUiItem(
     val provider: Provider,
-    val messageCount: Int
+    val accountCount: Int,
+    val totalAmount: Double,
+    val transactionCount: Int
 )
 
 class ProviderAdapter(
@@ -30,14 +32,16 @@ class ProviderAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.binding.tvProviderName.text = item.provider.name
-        holder.binding.tvProviderPattern.text = item.provider.senderPattern
-        holder.binding.tvMessageCount.text = item.messageCount.toString()
+        holder.binding.tvProviderPattern.text = item.provider.recipientNumber
+        holder.binding.tvMessageCount.text = "${item.accountCount} حساب\n${formatAmount(item.totalAmount)} عملة\n${item.transactionCount} عملية"
         holder.binding.root.setOnClickListener { onClick(item.provider) }
         holder.binding.root.setOnLongClickListener {
             onLongClick(item.provider)
             true
         }
     }
+
+    private fun formatAmount(v: Double) = if (v % 1.0 == 0.0) v.toLong().toString() else String.format("%.2f", v)
 
     override fun getItemCount() = items.size
 

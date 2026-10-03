@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.SmsToTelegram" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorPrimaryDark">#0D47A1</item>
+        <item name="colorAccent">#2196F3</item>
+    </style>
+</resources>

@@ -20,8 +20,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # أندرويد SDK بالفعل مثبت مسبقًا على ubuntu-latest، فبس بنوافق على التراخيص
+      # وننزل الحزم المطلوبة بالتحديد بدل الاعتماد على action خارجي غير مستقر
+      - name: Accept Android SDK licenses & install required packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

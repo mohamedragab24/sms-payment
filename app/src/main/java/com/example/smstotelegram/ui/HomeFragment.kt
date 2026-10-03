@@ -39,6 +39,10 @@ class HomeFragment : Fragment() {
             binding.tvTotalMessages.text = totalMessages.toString()
             binding.tvTotalNumbers.text = totalNumbers.toString()
             binding.cardAccounts.setOnClickListener { startActivity(android.content.Intent(requireContext(), AccountStatsActivity::class.java)) }
+            binding.cardMessages.setOnClickListener { startActivity(android.content.Intent(requireContext(), AllMessagesActivity::class.java)) }
+            binding.cardProviders.setOnClickListener {
+                requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(com.example.smstotelegram.R.id.bottomNav).selectedItemId = com.example.smstotelegram.R.id.nav_messages
+            }
             binding.tvTotalProviders.text = totalProviders.toString()
         }
     }

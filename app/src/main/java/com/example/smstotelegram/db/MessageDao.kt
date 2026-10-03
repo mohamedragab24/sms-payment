@@ -21,6 +21,12 @@ interface MessageDao {
     @androidx.room.Query("SELECT * FROM messages WHERE providerId = :providerId ORDER BY timestamp DESC")
     suspend fun getMessagesForProvider(providerId: String): List<MessageEntity>
 
+    @androidx.room.Query("SELECT * FROM messages ORDER BY timestamp DESC")
+    suspend fun getAllMessages(): List<MessageEntity>
+
+    @androidx.room.Query("SELECT * FROM messages WHERE providerId = :providerId AND recipientNumber = :account ORDER BY timestamp DESC")
+    suspend fun getMessagesForAccount(providerId: String, account: String): List<MessageEntity>
+
     @androidx.room.Query("SELECT COUNT(*) FROM messages")
     suspend fun getTotalMessagesCount(): Int
 

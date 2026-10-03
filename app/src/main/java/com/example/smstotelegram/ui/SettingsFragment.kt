@@ -53,10 +53,15 @@ class SettingsFragment : Fragment() {
         binding.switchEnabled.isChecked = Prefs.isEnabled(context)
 
         updatePermissionStatus()
+        setTelegramLocked(Prefs.isConfigured(context))
 
         binding.btnGrantPermissions.setOnClickListener { requestNeededPermissions() }
 
         binding.btnSave.setOnClickListener { saveSettings() }
+        binding.btnEditTelegram.setOnClickListener {
+            setTelegramLocked(false)
+            binding.btnEditTelegram.text = "🔓 إلغاء القفل"
+        }
 
         binding.switchEnabled.setOnCheckedChangeListener { _, isChecked ->
             Prefs.setEnabled(context, isChecked)
@@ -76,8 +81,17 @@ class SettingsFragment : Fragment() {
         Prefs.setBotToken(context, token)
         Prefs.setChatId(context, chatId)
 
-        Toast.makeText(context, "تم الحفظ", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "تم الحفظ وتأمين بيانات الربط", Toast.LENGTH_SHORT).show()
+        setTelegramLocked(true)
         startServiceIfConfigured()
+    }
+
+
+    private fun setTelegramLocked(locked: Boolean) {
+        binding.etBotToken.isEnabled = !locked
+        binding.etChatId.isEnabled = !locked
+        binding.btnSave.isEnabled = !locked
+        binding.btnEditTelegram.text = if (locked) "🔒 تعديل" else "🔓 إلغاء القفل"
     }
 
     private fun requestNeededPermissions() {

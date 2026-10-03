@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smstotelegram.databinding.ItemAccountStatBinding
 import com.example.smstotelegram.db.AccountStat
 
-class AccountStatsAdapter(private var items: List<AccountStat>) : RecyclerView.Adapter<AccountStatsAdapter.VH>() {
+class AccountStatsAdapter(private var items: List<AccountStat>, private val onClick: ((AccountStat) -> Unit)? = null) : RecyclerView.Adapter<AccountStatsAdapter.VH>() {
     inner class VH(val binding: ItemAccountStatBinding): RecyclerView.ViewHolder(binding.root)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH = VH(
         ItemAccountStatBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,6 +17,7 @@ class AccountStatsAdapter(private var items: List<AccountStat>) : RecyclerView.A
         holder.binding.tvProvider.text = item.providerName
         holder.binding.tvTotal.text = format(item.totalAmount) + " عملة مستلمة"
         holder.binding.tvTransactions.text = item.transactionCount.toString() + " عملية"
+        holder.binding.root.setOnClickListener { onClick?.invoke(item) }
     }
     override fun getItemCount() = items.size
     fun updateItems(value: List<AccountStat>) { items = value; notifyDataSetChanged() }

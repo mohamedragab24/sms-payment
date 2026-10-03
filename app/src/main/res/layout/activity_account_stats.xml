@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp">
-<TextView android:id="@+id/tvTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="كل أرقام الحسابات المتاحة" android:textSize="20sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#F7FBFD">
+<TextView android:id="@+id/tvTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="كل أرقام الحسابات المتاحة" android:textSize="20sp" android:textStyle="bold" android:textColor="#294B63"/>
+<android.widget.SearchView android:id="@+id/etSearch" android:layout_width="match_parent" android:layout_height="wrap_content" android:queryHint="ابحث برقم الحساب أو مزود الخدمة"/>
 <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="لا توجد حسابات مستلمة حتى الآن" android:gravity="center" android:padding="32dp" android:visibility="gone"/>
 <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvAccounts" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
 </LinearLayout>

@@ -32,7 +32,8 @@ class ProviderAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.binding.tvProviderName.text = item.provider.name
-        holder.binding.tvProviderPattern.text = item.provider.recipientNumber
+        holder.binding.tvProviderPattern.text = "المستلم: ${item.provider.recipientNumber}"
+        holder.binding.tvSenderId.text = "المرسل: ${item.provider.senderId ?: "غير محدد"}"
         holder.binding.tvMessageCount.text = "${item.accountCount} حساب\n${formatAmount(item.totalAmount)} عملة\n${item.transactionCount} عملية"
         holder.binding.root.setOnClickListener { onClick(item.provider) }
         holder.binding.root.setOnLongClickListener {

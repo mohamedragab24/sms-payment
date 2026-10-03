@@ -22,6 +22,7 @@ class MessagesFragment : Fragment() {
     private var _binding: FragmentMessagesBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: ProviderAdapter
+    private var allItems = emptyList<ProviderUiItem>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -49,6 +50,12 @@ class MessagesFragment : Fragment() {
         binding.rvProviders.adapter = adapter
 
         binding.fabAddProvider.setOnClickListener { showAddProviderDialog() }
+        binding.etSearch.setOnQueryTextListener(object : android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(q: String?) = true
+            override fun onQueryTextChange(q: String?): Boolean {
+                filterItems(q.orEmpty()); return true
+            }
+        })
     }
 
     override fun onResume() {
@@ -66,9 +73,19 @@ class MessagesFragment : Fragment() {
                 val st = stats[provider.id]
                 ProviderUiItem(provider, st?.accountCount ?: 0, st?.totalAmount ?: 0.0, st?.transactionCount ?: 0)
             }
-            adapter.updateItems(items)
+            allItems = items
+            filterItems(binding.etSearch.query?.toString().orEmpty())
             binding.tvEmptyState.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+
+    private fun filterItems(query: String) {
+        val q = query.trim().lowercase()
+        val filtered = if (q.isBlank()) allItems else allItems.filter {
+            it.provider.name.lowercase().contains(q) || it.provider.recipientNumber.contains(q) || (it.provider.senderId ?: "").lowercase().contains(q)
+        }
+        adapter.updateItems(filtered)
     }
 
     private fun showAddProviderDialog() {

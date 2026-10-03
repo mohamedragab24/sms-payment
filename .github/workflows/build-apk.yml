@@ -35,8 +35,12 @@ jobs:
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      # بنثبت إصدار Gradle متوافق مع Android Gradle Plugin 8.1.2
+      # (أحدث إصدار Gradle بيبقى غير متوافق ويسبب فشل زي ده)
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.4'
 
       - name: Build debug APK
         run: gradle assembleDebug

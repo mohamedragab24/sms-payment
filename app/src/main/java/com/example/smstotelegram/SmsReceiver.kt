@@ -5,11 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
+import androidx.room.Room
+import com.example.smstotelegram.db.AppDatabase
+import com.example.smstotelegram.db.MessageEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * يستقبل كل رسالة SMS جديدة توصل للجهاز.
- * لو التوصيل مفعّل، ولو المرسل مطابق للفلتر المحفوظ (أو الفلتر فاضي يعني كل الرسائل)،
- * بيبعت نص الرسالة لبوت تليجرام.
+ * بيدور على أول مزود خدمة (Provider) مرسله مطابق لمرسل الرسالة،
+ * ولو لقى مطابقة: يخزن الرسالة محليًا ويبعتها لبوت تليجرام.
  */
 class SmsReceiver : BroadcastReceiver() {
 
@@ -25,23 +31,39 @@ class SmsReceiver : BroadcastReceiver() {
             return
         }
 
+        val providers = Prefs.getProviders(context)
+        if (providers.isEmpty()) {
+            Log.d(TAG, "مفيش مزودي خدمة مضافين لسه")
+            return
+        }
+
         val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-        val senderFilter = Prefs.getSenderFilter(context).trim()
+        val appContext = context.applicationContext
 
         for (sms in messages) {
             val sender = sms.originatingAddress ?: "غير معروف"
             val body = sms.messageBody ?: ""
 
-            val matchesFilter = senderFilter.isBlank() ||
-                sender.contains(senderFilter, ignoreCase = true)
+            val matchedProvider = providers.find { provider ->
+                provider.senderPattern.isNotBlank() &&
+                    sender.contains(provider.senderPattern, ignoreCase = true)
+            } ?: continue
 
-            if (!matchesFilter) {
-                Log.d(TAG, "الرسالة من $sender اتجاهلت (مش مطابقة للفلتر)")
-                continue
+            val formatted = "رسالة جديدة من ${matchedProvider.name}\nالمرسل: $sender\n\n$body"
+            TelegramSender.send(appContext, formatted)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val dao = AppDatabase.getInstance(appContext).messageDao()
+                dao.insert(
+                    MessageEntity(
+                        providerId = matchedProvider.id,
+                        providerName = matchedProvider.name,
+                        sender = sender,
+                        body = body,
+                        timestamp = System.currentTimeMillis()
+                    )
+                )
             }
-
-            val formatted = "رسالة جديدة\nمن: $sender\n\n$body"
-            TelegramSender.send(context, formatted)
         }
     }
 }

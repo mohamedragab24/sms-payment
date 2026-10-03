@@ -1,9 +1,11 @@
 package com.example.smstotelegram
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 /**
- * مسؤول عن حفظ وقراءة إعدادات الربط مع تليجرام وفلتر المرسل
+ * مسؤول عن حفظ وقراءة إعدادات الربط مع تليجرام وقائمة مزودي الخدمة (فلاتر المرسلين)
  * كل القيم بتتخزن محليًا على الجهاز فقط (SharedPreferences)
  */
 object Prefs {
@@ -11,8 +13,10 @@ object Prefs {
 
     private const val KEY_BOT_TOKEN = "bot_token"
     private const val KEY_CHAT_ID = "chat_id"
-    private const val KEY_SENDER_FILTER = "sender_filter"
     private const val KEY_ENABLED = "forwarding_enabled"
+    private const val KEY_PROVIDERS = "providers_json"
+
+    private val gson = Gson()
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
@@ -31,14 +35,6 @@ object Prefs {
         prefs(context).edit().putString(KEY_CHAT_ID, value.trim()).apply()
     }
 
-    /** رقم أو اسم المرسل المسموح نقبل رسائله فقط. سيبه فاضي لو عايز توسعة لاحقًا لأكتر من رقم */
-    fun getSenderFilter(context: Context): String =
-        prefs(context).getString(KEY_SENDER_FILTER, "") ?: ""
-
-    fun setSenderFilter(context: Context, value: String) {
-        prefs(context).edit().putString(KEY_SENDER_FILTER, value.trim()).apply()
-    }
-
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(KEY_ENABLED, true)
 
@@ -48,4 +44,34 @@ object Prefs {
 
     fun isConfigured(context: Context): Boolean =
         getBotToken(context).isNotBlank() && getChatId(context).isNotBlank()
+
+    // ---------------- مزودي الخدمة ----------------
+
+    fun getProviders(context: Context): List<Provider> {
+        val json = prefs(context).getString(KEY_PROVIDERS, null) ?: return emptyList()
+        val type = object : TypeToken<List<Provider>>() {}.type
+        return try {
+            gson.fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun saveProviders(context: Context, providers: List<Provider>) {
+        prefs(context).edit().putString(KEY_PROVIDERS, gson.toJson(providers)).apply()
+    }
+
+    fun addProvider(context: Context, provider: Provider) {
+        val current = getProviders(context).toMutableList()
+        current.add(provider)
+        saveProviders(context, current)
+    }
+
+    fun deleteProvider(context: Context, providerId: String) {
+        val current = getProviders(context).filterNot { it.id == providerId }
+        saveProviders(context, current)
+    }
+
+    fun getProvider(context: Context, providerId: String): Provider? =
+        getProviders(context).find { it.id == providerId }
 }

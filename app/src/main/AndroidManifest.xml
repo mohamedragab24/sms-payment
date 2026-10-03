@@ -29,6 +29,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.ProviderMessagesActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <!-- يستقبل كل رسالة SMS جديدة وصلت للجهاز -->
         <receiver
             android:name=".SmsReceiver"

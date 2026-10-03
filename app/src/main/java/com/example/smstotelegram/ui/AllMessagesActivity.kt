@@ -24,7 +24,7 @@ class AllMessagesActivity: AppCompatActivity(){
         binding.spProvider.adapter=ArrayAdapter(this,android.R.layout.simple_spinner_dropdown_item,providers)
         binding.spProvider.setOnItemSelectedListener(object:android.widget.AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(p:android.widget.AdapterView<*>?){}
-            override fun onItemSelected(p:android.widget.AdapterView<*>?,v:android.view.View?,pos:Int,id:Long){providerFilter=providers[pos];filter(binding.etSearch.text.toString())}
+            override fun onItemSelected(p:android.widget.AdapterView<*>?,v:android.view.View?,pos:Int,id:Long){providerFilter=providers[pos];filter(binding.etSearch.query?.toString().orEmpty())}
         })
         binding.etSearch.setOnQueryTextListener(object:android.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(q:String?)=true

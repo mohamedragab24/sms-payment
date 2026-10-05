@@ -112,3 +112,9 @@
 - `TelegramSender.kt` — بيبعت نص الرسالة لبوت تليجرام
 - `ForwarderService.kt` — خدمة خلفية تمنع النظام من قفل التطبيق
 - `BootReceiver.kt` — يشغّل الخدمة تاني بعد إعادة تشغيل الموبايل
+
+---
+## الإرسال المباشر لموقع فهمني (تأكيد الدفع تلقائيًا)
+الرسائل تُرسل الآن إلى `https://fahemny86.vercel.app/api/payments/ingest` مع الهيدر `x-ingest-secret`.
+تليجرام صار نسخة احتياطية للمراجعة فقط (اختياري).
+يجب أن تكون كلمة السر (`Prefs.DEFAULT_INGEST_SECRET` أو من شاشة الإعدادات) مطابقة لمتغير `PAYMENT_INGEST_SECRET` في Vercel.

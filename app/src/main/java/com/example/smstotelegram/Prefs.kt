@@ -15,6 +15,12 @@ object Prefs {
     private const val KEY_CHAT_ID = "chat_id"
     private const val KEY_ENABLED = "forwarding_enabled"
     private const val KEY_PROVIDERS = "providers_json"
+    private const val KEY_INGEST_URL = "ingest_url"
+    private const val KEY_INGEST_SECRET = "ingest_secret"
+
+    // الموقع الافتراضي وكلمة السر (يجب أن تطابق PAYMENT_INGEST_SECRET في Vercel)
+    const val DEFAULT_INGEST_URL = "https://fahemny86.vercel.app/api/payments/ingest"
+    const val DEFAULT_INGEST_SECRET = "4f3fec63148da2afa2ebe9e0dcbe33d285038f11f286f3c3"
 
     private val gson = Gson()
 
@@ -42,8 +48,29 @@ object Prefs {
         prefs(context).edit().putBoolean(KEY_ENABLED, value).apply()
     }
 
-    fun isConfigured(context: Context): Boolean =
+    fun isTelegramConfigured(context: Context): Boolean =
         getBotToken(context).isNotBlank() && getChatId(context).isNotBlank()
+
+    fun getIngestUrl(context: Context): String =
+        (prefs(context).getString(KEY_INGEST_URL, "") ?: "").ifBlank { DEFAULT_INGEST_URL }
+
+    fun setIngestUrl(context: Context, value: String) {
+        prefs(context).edit().putString(KEY_INGEST_URL, value.trim()).apply()
+    }
+
+    fun getIngestSecret(context: Context): String =
+        (prefs(context).getString(KEY_INGEST_SECRET, "") ?: "").ifBlank { DEFAULT_INGEST_SECRET }
+
+    fun setIngestSecret(context: Context, value: String) {
+        prefs(context).edit().putString(KEY_INGEST_SECRET, value.trim()).apply()
+    }
+
+    fun isIngestConfigured(context: Context): Boolean =
+        getIngestUrl(context).isNotBlank() && getIngestSecret(context).isNotBlank()
+
+    /** التطبيق جاهز للعمل إذا كان الإرسال للموقع أو لتليجرام مضبوطًا */
+    fun isConfigured(context: Context): Boolean =
+        isIngestConfigured(context) || isTelegramConfigured(context)
 
     // ---------------- مزودي الخدمة ----------------
 

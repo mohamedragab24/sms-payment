@@ -15,13 +15,26 @@ object TelegramSender {
     private const val TAG = "TelegramSender"
     private val client = OkHttpClient()
 
-    fun send(context: Context, text: String, onResult: ((Boolean, String) -> Unit)? = null) {
+    fun send(context: Context, text: String) {
+        sendWithResult(context, text, null)
+    }
+
+    /**
+     * 1) الإرسال للموقع (PaymentIngest) — هو المسار الذي يؤكد الدفع تلقائيًا.
+     * 2) نسخة احتياطية لتليجرام (للمراجعة فقط) إن كان البوت مضبوطًا.
+     * النتيجة المُرجعة للـ callback هي نتيجة الإرسال للموقع.
+     */
+    fun sendWithResult(context: Context, text: String, callback: ((Boolean, String?) -> Unit)?) {
+        PaymentIngest.send(Prefs.getIngestUrl(context), Prefs.getIngestSecret(context), text, callback)
+        sendToTelegram(context, text)
+    }
+
+    private fun sendToTelegram(context: Context, text: String) {
         val token = Prefs.getBotToken(context)
         val chatId = Prefs.getChatId(context)
 
         if (token.isBlank() || chatId.isBlank()) {
-            Log.w(TAG, "لسه معملتش إعداد التوكن أو الـ chat id")
-            onResult?.invoke(false, "Bot Token أو Chat ID غير مُعد")
+            Log.w(TAG, "تليجرام غير مضبوط: سيتم الإرسال للموقع فقط")
             return
         }
 
@@ -40,16 +53,12 @@ object TelegramSender {
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 Log.e(TAG, "فشل إرسال الرسالة لتليجرام: ${e.message}")
-                onResult?.invoke(false, e.message ?: "فشل الاتصال بتليجرام")
             }
 
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                val responseBody = response.body?.string()
                 if (!response.isSuccessful) {
-                    val details = response.body?.string().orEmpty()
-                    Log.e(TAG, "تليجرام رفض الطلب: ${response.code} - $details")
-                    onResult?.invoke(false, "Telegram رفض الطلب (${response.code})")
-                } else {
-                    onResult?.invoke(true, "تم إرسال رسالة الاختبار إلى Telegram")
+                    Log.e(TAG, "تليجرام رفض الطلب: ${response.code} - $responseBody")
                 }
                 response.close()
             }

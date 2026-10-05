@@ -41,49 +41,52 @@ object SmsParser {
     }
 
     // ---------- تحديد المزود / الحساب ----------
-    private val aliasGroups = listOf(
-        listOf("vfcash", "vodafonecash", "vodafone", "فودافونكاش", "فودافون"),
-        listOf("etisalatcash", "etisalat", "اتصالاتكاش", "اتصالات"),
-        listOf("orangecash", "orange", "اورنجكاش", "اورنج"),
-        listOf("wepay", "we", "وي"),
-        listOf("instapay", "انستاباي"),
-        listOf("fawry", "فوري")
-    )
+    private fun key(s: String): String = normalizeDigits(s).lowercase()
+        .trim()
+        .filter { it.isLetterOrDigit() }
 
-    private fun key(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
-
-    private fun groupOf(s: String): Int? {
-        val k = key(s)
-        if (k.isBlank()) return null
-        return aliasGroups.indexOfFirst { g -> g.any { it == k || (it.length > 3 && k.contains(it)) } }
-            .takeIf { it >= 0 }
-    }
-
-    private fun sameSender(providerName: String, sender: String): Boolean {
-        val a = key(providerName); val b = key(sender)
-        if (a.isBlank() || b.isBlank()) return false
-        if (a == b || (a.length > 3 && b.contains(a)) || (b.length > 3 && a.contains(b))) return true
-        val ga = groupOf(providerName); val gb = groupOf(sender)
-        return ga != null && ga == gb
-    }
-
-    private fun lastDigits(s: String, n: Int = 9): String {
-        val d = normalizeDigits(s).filter { it.isDigit() }
-        return if (d.length > n) d.takeLast(n) else d
-    }
-
-    /** يرجّع المزود المناسب: أولًا بالرقم لو موجود في نص الرسالة، وإلا باسم المرسل (VF-Cash مثلًا). */
+    /**
+     * قبول الرسالة فقط إذا كان المرسل نفسه مضافًا في إعدادات مزود الخدمة.
+     * لا نعتمد على رقم الحساب الموجود داخل نص الرسالة، لأن أي رسالة عادية
+     * قد تحتوي على الرقم وتؤدي إلى استقبالها بالخطأ.
+     *
+     * المطابقة تكون مع:
+     * 1) اسم المرسل (senderId) المضاف للمزود، أو
+     * 2) اسم مزود الخدمة نفسه إذا لم يوجد senderId مستقل.
+     */
     fun findProvider(sender: String, body: String, providers: List<Provider>): Provider? {
-        // 1) اسم المرسل المحدد للمزود (كل رسائل المرسل ده تتقرأ)
-        providers.firstOrNull {
-            val sid = it.senderId?.let(::key).orEmpty()
-            sid.isNotBlank() && sid == key(sender)
-        }?.let { return it }
-        val bodyDigits = normalizeDigits(body).filter { it.isDigit() }
-        providers.firstOrNull {
-            val d = lastDigits(it.recipientNumber)
-            d.length >= 7 && bodyDigits.contains(d)
-        }?.let { return it }
-        return providers.firstOrNull { sameSender(it.name, sender) }
+        val senderKey = key(sender)
+        if (senderKey.isBlank()) return null
+
+        return providers.firstOrNull { provider ->
+            val configuredSender = key(provider.senderId.orEmpty())
+            val providerName = key(provider.name)
+
+            (configuredSender.isNotBlank() && senderKey == configuredSender) ||
+                (providerName.isNotBlank() && senderKey == providerName)
+        }
     }
+
+    // ---------- رقم العملية ----------
+    fun findTransactionId(body: String): String? {
+        val text = normalizeDigits(body)
+        val patterns = listOf(
+            Regex("(?i)(?:رقم\\s*العملية|رقم\\s*العمليه|transaction\\s*(?:id|no|number)|txn\\s*(?:id|no))\\s*[:#-]?\\s*([A-Za-z0-9_-]+)"),
+            Regex("(?i)(?:عملية|عمليه)\\s*(?:رقم|#)\\s*[:#-]?\\s*([A-Za-z0-9_-]+)")
+        )
+        for (regex in patterns) regex.find(text)?.groupValues?.getOrNull(1)?.let { return it }
+        return null
+    }
+
+    // ---------- رقم المرسل / من رقم ----------
+    fun findFromNumber(body: String): String? {
+        val text = normalizeDigits(body)
+        val patterns = listOf(
+            Regex("(?i)(?:من\\s*(?:رقم|الرقم)|from\\s*(?:number|no|phone))\\s*[:#-]?\\s*(\\+?[0-9][0-9 -]{6,})"),
+            Regex("(?i)(?:sender|المرسل)\\s*[:#-]?\\s*(\\+?[0-9][0-9 -]{6,})")
+        )
+        for (regex in patterns) regex.find(text)?.groupValues?.getOrNull(1)?.trim()?.let { return it.replace(" ", "") }
+        return null
+    }
+
 }

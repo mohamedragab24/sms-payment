@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.example.smstotelegram.db.AppDatabase
 import com.example.smstotelegram.db.MessageEntity
 import kotlinx.coroutines.CoroutineScope
@@ -31,8 +34,18 @@ class SmsReceiver : BroadcastReceiver() {
         }
         val account = provider.recipientNumber
         val amount = SmsParser.findAmount(body) ?: 0.0
+        val transactionId = SmsParser.findTransactionId(body) ?: "غير متوفر"
+        val fromNumber = SmsParser.findFromNumber(body) ?: sender
+        val operationDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            .format(Date(parts[0].timestampMillis))
 
-        val formatted = "رسالة جديدة من ${provider.name}\nرقم الحساب/المستلم: $account\nالمبلغ: ${formatAmount(amount)}\nالمرسل: $sender\n\n$body"
+        // إرسال البيانات المطلوبة فقط إلى تيليجرام، بدون نص الرسالة الأصلي.
+        val formatted = buildString {
+            append("رقم العملية: $transactionId\n")
+            append("المبلغ: ${formatAmount(amount)}\n")
+            append("تاريخ العملية: $operationDate\n")
+            append("من رقم: $fromNumber")
+        }
         TelegramSender.send(appContext, formatted)
 
         val pending = goAsync()

@@ -96,7 +96,7 @@ class MessagesFragment : Fragment() {
         }
         val nameInput = EditText(context).apply { hint = "اسم مزود الخدمة (مثال: فودافون كاش)" }
         val recipientInput = EditText(context).apply { hint = "رقم المستلم / رقم الحساب"; inputType = android.text.InputType.TYPE_CLASS_PHONE }
-        val senderInput = EditText(context).apply { hint = "اسم المرسل في الرسائل (مثال: VF-Cash)" }
+        val senderInput = EditText(context).apply { hint = "اسم المرسل المسموح فقط (مثال: VF-Cash)" }
         layout.addView(nameInput)
         layout.addView(senderInput)
         layout.addView(recipientInput)
@@ -107,11 +107,11 @@ class MessagesFragment : Fragment() {
             .setPositiveButton("إضافة") { _, _ ->
                 val name = nameInput.text.toString().trim()
                 val recipient = recipientInput.text.toString().trim()
-                if (name.isBlank() || recipient.isBlank()) {
-                    Toast.makeText(context, "لازم تملأ اسم المزود ورقم المستلم", Toast.LENGTH_SHORT).show()
+                val sender = senderInput.text.toString().trim()
+                if (name.isBlank() || recipient.isBlank() || sender.isBlank()) {
+                    Toast.makeText(context, "لازم تملأ اسم المزود ورقم المستلم واسم المرسل المسموح", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                val sender = senderInput.text.toString().trim().ifBlank { name }
                 val provider = Provider(name = name, recipientNumber = recipient, senderId = sender)
                 Prefs.addProvider(context, provider)
                 loadProviders()

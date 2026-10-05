@@ -1,7 +1,13 @@
 <resources>
     <style name="Theme.SmsToTelegram" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#25A8DE</item>
-        <item name="colorPrimaryDark">#1688B8</item>
-        <item name="colorAccent">#FF6937</item>
+        <item name="colorPrimary">#2196D2</item>
+        <item name="colorPrimaryVariant">#1976B2</item>
+        <item name="colorPrimaryDark">#1976B2</item>
+        <item name="colorAccent">#FF7043</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#F6F9FC</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>

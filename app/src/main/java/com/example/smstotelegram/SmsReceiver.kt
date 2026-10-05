@@ -36,7 +36,7 @@ class SmsReceiver : BroadcastReceiver() {
         val amount = SmsParser.findAmount(body) ?: 0.0
         val transactionId = SmsParser.findTransactionId(body) ?: "غير متوفر"
         val fromNumber = SmsParser.findFromNumber(body) ?: sender
-        val operationDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val operationDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
             .format(Date(parts[0].timestampMillis))
 
         // إرسال البيانات المطلوبة فقط إلى تيليجرام، بدون نص الرسالة الأصلي.
@@ -44,7 +44,8 @@ class SmsReceiver : BroadcastReceiver() {
             append("رقم العملية: $transactionId\n")
             append("المبلغ: ${formatAmount(amount)}\n")
             append("تاريخ العملية: $operationDate\n")
-            append("من رقم: $fromNumber")
+            append("من رقم: $fromNumber\n")
+            append("طريقة الدفع: ${provider.name}")
         }
         TelegramSender.send(appContext, formatted)
 

@@ -99,79 +99,65 @@ class SettingsFragment : Fragment() {
 
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(32, 8, 32, 0)
+            setPadding(48, 16, 48, 0)
         }
 
-        fun field(hint: String, inputType: Int = android.text.InputType.TYPE_CLASS_TEXT): EditText {
+        fun field(hint: String, inputType: Int): EditText {
             return EditText(context).apply {
                 this.hint = hint
                 this.inputType = inputType
                 setSingleLine(true)
-                layoutParams = LinearLayout.LayoutParams(-1, 54).apply { bottomMargin = 6 }
-            }.also { container.addView(it) }
+            }.also { container.addView(it, LinearLayout.LayoutParams(-1, -2)) }
         }
 
-        val recipient = field("رقم الهاتف المرسل إليه")
-        val sender = field("رقم الهاتف المرسل / من رقم")
-        val transaction = field("رقم العملية")
-        val amount = field("المبلغ", android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        val provider = field("مزود الخدمة / اسم البنك أو الشركة")
-        val receiverAccount = field("رقم حساب المستلم / الحساب")
-
-        val paymentLabel = TextView(context).apply {
+        container.addView(TextView(context).apply {
             text = "طريقة الدفع"
             textSize = 13f
-            setPadding(0, 2, 0, 4)
-        }
-        container.addView(paymentLabel)
+        })
         val paymentMethod = Spinner(context)
-        paymentMethod.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, arrayOf(
-            "تحويل بنكي", "محفظة إلكترونية", "فوري", "بطاقة", "تحويل داخلي", "أخرى"
-        ))
-        container.addView(paymentMethod, LinearLayout.LayoutParams(-1, 50).apply { bottomMargin = 6 })
+        paymentMethod.adapter = ArrayAdapter(
+            context, android.R.layout.simple_spinner_dropdown_item,
+            arrayOf("فودافون كاش", "اورنج كاش", "اتصالات كاش", "وي باي", "انستا باي", "أخرى")
+        )
+        container.addView(paymentMethod, LinearLayout.LayoutParams(-1, -2))
 
-        val date = field("تاريخ ووقت العملية (اختياري)")
-        date.setText(java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date()))
-        val note = field("ملاحظات إضافية (اختياري)")
+        val fromNumber = field("الرقم الذي حوّل منه", android.text.InputType.TYPE_CLASS_PHONE)
+        val amount = field("المبلغ", android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL)
+        val transaction = field("رقم العملية (اختياري)", android.text.InputType.TYPE_CLASS_TEXT)
 
-        val scroll = android.widget.ScrollView(context).apply {
-            addView(container)
-            layoutParams = LinearLayout.LayoutParams(-1, 0, 1f)
-        }
+        container.addView(TextView(context).apply {
+            text = "التاريخ والوقت يُكتبان تلقائيًا"
+            textSize = 12f
+            setPadding(0, 12, 0, 0)
+        })
 
-        val dialogContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            addView(scroll)
-        }
+        val scroll = android.widget.ScrollView(context).apply { addView(container) }
 
         val dialog = AlertDialog.Builder(context)
             .setTitle("🧪 رسالة دفع تجريبية")
-            .setMessage("اكتب كل بيانات العملية التي تريد اختبارها. لن يتم تنفيذ أي تحويل مالي.")
-            .setView(dialogContainer)
+            .setView(scroll)
             .setNegativeButton("إلغاء", null)
             .setPositiveButton("إرسال للموقع", null)
             .create()
 
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val from = fromNumber.text.toString().trim()
                 val amountValue = amount.text.toString().trim()
-                if (recipient.text.toString().trim().isBlank() || sender.text.toString().trim().isBlank() ||
-                    transaction.text.toString().trim().isBlank() || amountValue.isBlank()) {
-                    Toast.makeText(context, "اكتب رقم المرسل إليه، رقم المرسل، رقم العملية والمبلغ", Toast.LENGTH_LONG).show()
+                if (from.isBlank() || amountValue.isBlank()) {
+                    Toast.makeText(context, "اكتب الرقم الذي حوّل منه والمبلغ", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
+                val txId = transaction.text.toString().trim().ifBlank { "TEST" + (100000..999999).random() }
+                val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date())
 
                 val message = buildString {
                     append("🧪 رسالة اختبار\n\n")
-                    append("رقم الهاتف المرسل إليه: ${recipient.text.toString().trim()}\n")
-                    append("رقم العملية: ${transaction.text.toString().trim()}\n")
+                    append("رقم العملية: $txId\n")
                     append("المبلغ: $amountValue\n")
-                    append("طريقة الدفع: ${paymentMethod.selectedItem}\n")
-                    append("تاريخ العملية: ${date.text.toString().trim()}\n")
-                    append("من رقم: ${sender.text.toString().trim()}\n")
-                    if (provider.text.toString().trim().isNotBlank()) append("مزود الخدمة: ${provider.text.toString().trim()}\n")
-                    if (receiverAccount.text.toString().trim().isNotBlank()) append("رقم حساب المستلم: ${receiverAccount.text.toString().trim()}\n")
-                    if (note.text.toString().trim().isNotBlank()) append("ملاحظات: ${note.text.toString().trim()}\n")
+                    append("تاريخ العملية: $now\n")
+                    append("من رقم: $from\n")
+                    append("طريقة الدفع: ${paymentMethod.selectedItem}")
                 }
 
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false

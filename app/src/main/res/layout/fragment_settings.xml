@@ -22,6 +22,7 @@
 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="تفعيل إرسال الرسائل" android:textColor="#19324A" android:textStyle="bold"/>
 <Switch android:id="@+id/switchEnabled" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 </LinearLayout>
+<Button android:id="@+id/btnTestTelegram" android:layout_width="match_parent" android:layout_height="48dp" android:text="🧪 إرسال رسالة تجريبية للبوت" android:textColor="#FFFFFF" android:background="@drawable/bg_secondary_button" android:layout_marginTop="10dp"/>
 <Button android:id="@+id/btnSave" android:layout_width="match_parent" android:layout_height="48dp" android:text="حفظ وتأمين بيانات الربط" android:textColor="#FFFFFF" android:background="@drawable/bg_primary_button" android:layout_marginTop="14dp"/>
 </LinearLayout>
 </LinearLayout>

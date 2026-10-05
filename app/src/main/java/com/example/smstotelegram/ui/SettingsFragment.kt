@@ -5,6 +5,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.example.smstotelegram.TelegramSender
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,6 +62,7 @@ class SettingsFragment : Fragment() {
         binding.btnGrantPermissions.setOnClickListener { requestNeededPermissions() }
 
         binding.btnSave.setOnClickListener { saveSettings() }
+        binding.btnTestTelegram.setOnClickListener { sendTestTelegram() }
         binding.btnEditTelegram.setOnClickListener {
             setTelegramLocked(false)
             binding.btnEditTelegram.text = "🔓 إلغاء القفل"
@@ -65,6 +70,31 @@ class SettingsFragment : Fragment() {
 
         binding.switchEnabled.setOnCheckedChangeListener { _, isChecked ->
             Prefs.setEnabled(context, isChecked)
+        }
+    }
+
+    private fun sendTestTelegram() {
+        val context = requireContext()
+        if (!Prefs.isConfigured(context)) {
+            Toast.makeText(context, "احفظ Bot Token و Chat ID أولًا", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        val testMessage = """🧪 رسالة اختبار
+
+رقم العملية: TEST-${System.currentTimeMillis().toString().takeLast(6)}
+المبلغ: 500
+تاريخ العملية: $date
+من رقم: 01012345678
+""".trimIndent()
+
+        binding.btnTestTelegram.isEnabled = false
+        TelegramSender.send(context, testMessage) { success, message ->
+            activity?.runOnUiThread {
+                binding.btnTestTelegram.isEnabled = true
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 

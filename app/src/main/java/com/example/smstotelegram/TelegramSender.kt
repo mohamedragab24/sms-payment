@@ -15,12 +15,13 @@ object TelegramSender {
     private const val TAG = "TelegramSender"
     private val client = OkHttpClient()
 
-    fun send(context: Context, text: String) {
+    fun send(context: Context, text: String, onResult: ((Boolean, String) -> Unit)? = null) {
         val token = Prefs.getBotToken(context)
         val chatId = Prefs.getChatId(context)
 
         if (token.isBlank() || chatId.isBlank()) {
             Log.w(TAG, "لسه معملتش إعداد التوكن أو الـ chat id")
+            onResult?.invoke(false, "Bot Token أو Chat ID غير مُعد")
             return
         }
 
@@ -39,11 +40,16 @@ object TelegramSender {
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 Log.e(TAG, "فشل إرسال الرسالة لتليجرام: ${e.message}")
+                onResult?.invoke(false, e.message ?: "فشل الاتصال بتليجرام")
             }
 
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
                 if (!response.isSuccessful) {
-                    Log.e(TAG, "تليجرام رفض الطلب: ${response.code} - ${response.body?.string()}")
+                    val details = response.body?.string().orEmpty()
+                    Log.e(TAG, "تليجرام رفض الطلب: ${response.code} - $details")
+                    onResult?.invoke(false, "Telegram رفض الطلب (${response.code})")
+                } else {
+                    onResult?.invoke(true, "تم إرسال رسالة الاختبار إلى Telegram")
                 }
                 response.close()
             }

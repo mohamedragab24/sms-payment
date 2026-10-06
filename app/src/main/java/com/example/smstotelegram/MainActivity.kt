@@ -23,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             showFragment(HomeFragment())
+            // فحص التحديثات تلقائيًا عند فتح التطبيق
+            AppUpdater.checkAndPrompt(this, false)
         }
 
         binding.bottomNav.setOnItemSelectedListener { item ->

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.smstotelegram.ForwarderService
+import com.example.smstotelegram.AppUpdater
 import com.example.smstotelegram.Prefs
 import com.example.smstotelegram.TelegramSender
 import com.example.smstotelegram.databinding.FragmentSettingsBinding
@@ -59,6 +60,9 @@ class SettingsFragment : Fragment() {
         binding.etChatId.setText(Prefs.getChatId(context))
         binding.etIngestUrl.setText(Prefs.getIngestUrl(context))
         binding.etIngestSecret.setText(Prefs.getIngestSecret(context))
+        binding.btnCheckUpdate.setOnClickListener {
+            AppUpdater.checkAndPrompt(requireActivity(), true)
+        }
         binding.btnSaveIngest.setOnClickListener {
             val url = binding.etIngestUrl.text.toString().trim()
             val secret = binding.etIngestSecret.text.toString().trim()
@@ -79,7 +83,9 @@ class SettingsFragment : Fragment() {
         binding.btnGrantPermissions.setOnClickListener { requestNeededPermissions() }
 
         binding.btnSave.setOnClickListener { saveSettings() }
-        binding.btnTestTelegram.setOnClickListener { showTelegramTestDialog() }
+        binding.btnTestTelegram.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.smstotelegram.TestPaymentActivity::class.java))
+        }
         binding.btnEditTelegram.setOnClickListener {
             setTelegramLocked(false)
             binding.btnEditTelegram.text = "🔓 إلغاء القفل"
@@ -88,93 +94,6 @@ class SettingsFragment : Fragment() {
         binding.switchEnabled.setOnCheckedChangeListener { _, isChecked ->
             Prefs.setEnabled(context, isChecked)
         }
-    }
-
-    private fun showTelegramTestDialog() {
-        val context = requireContext()
-        if (!Prefs.isConfigured(context)) {
-            Toast.makeText(context, "احفظ إعدادات الموقع أولاً", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val container = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 16, 48, 0)
-        }
-
-        fun field(hint: String, inputType: Int): EditText {
-            return EditText(context).apply {
-                this.hint = hint
-                this.inputType = inputType
-                setSingleLine(true)
-            }.also { container.addView(it, LinearLayout.LayoutParams(-1, -2)) }
-        }
-
-        container.addView(TextView(context).apply {
-            text = "طريقة الدفع"
-            textSize = 13f
-        })
-        val paymentMethod = Spinner(context)
-        paymentMethod.adapter = ArrayAdapter(
-            context, android.R.layout.simple_spinner_dropdown_item,
-            arrayOf("فودافون كاش", "اورنج كاش", "اتصالات كاش", "وي باي", "انستا باي", "أخرى")
-        )
-        container.addView(paymentMethod, LinearLayout.LayoutParams(-1, -2))
-
-        val fromNumber = field("الرقم الذي حوّل منه", android.text.InputType.TYPE_CLASS_PHONE)
-        val amount = field("المبلغ", android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        val transaction = field("رقم العملية (اختياري)", android.text.InputType.TYPE_CLASS_TEXT)
-
-        container.addView(TextView(context).apply {
-            text = "التاريخ والوقت يُكتبان تلقائيًا"
-            textSize = 12f
-            setPadding(0, 12, 0, 0)
-        })
-
-        val scroll = android.widget.ScrollView(context).apply { addView(container) }
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("🧪 رسالة دفع تجريبية")
-            .setView(scroll)
-            .setNegativeButton("إلغاء", null)
-            .setPositiveButton("إرسال للموقع", null)
-            .create()
-
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val from = fromNumber.text.toString().trim()
-                val amountValue = amount.text.toString().trim()
-                if (from.isBlank() || amountValue.isBlank()) {
-                    Toast.makeText(context, "اكتب الرقم الذي حوّل منه والمبلغ", Toast.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
-                val txId = transaction.text.toString().trim().ifBlank { "TEST" + (100000..999999).random() }
-                val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date())
-
-                val message = buildString {
-                    append("🧪 رسالة اختبار\n\n")
-                    append("رقم العملية: $txId\n")
-                    append("المبلغ: $amountValue\n")
-                    append("تاريخ العملية: $now\n")
-                    append("من رقم: $from\n")
-                    append("طريقة الدفع: ${paymentMethod.selectedItem}")
-                }
-
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                TelegramSender.sendWithResult(context, message) { success, error ->
-                    requireActivity().runOnUiThread {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                        if (success) {
-                            Toast.makeText(context, "تم الإرسال ✅ ${error ?: ""}", Toast.LENGTH_LONG).show()
-                            dialog.dismiss()
-                        } else {
-                            Toast.makeText(context, "فشل الإرسال: ${error ?: "خطأ غير معروف"}", Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            }
-        }
-        dialog.show()
     }
 
     private fun saveSettings() {

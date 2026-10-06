@@ -65,8 +65,11 @@ object PaymentIngest {
                     when {
                         j.optBoolean("duplicate", false) -> "الرسالة مرسلة من قبل (مكررة)"
                         j.has("parseOk") && !j.optBoolean("parseOk", true) -> "وصلت للموقع لكن لم يستطع قراءة (المبلغ/الرقم/الوقت)"
-                        (j.optJSONArray("confirmed")?.length() ?: 0) > 0 -> "تم تأكيد الطلب تلقائيًا ✅"
-                        else -> "وصلت للموقع ولم يوجد طلب مطابق (تحقق من المبلغ ورقم الدفع ووقت الطلب)"
+                        (j.optJSONArray("confirmed")?.length() ?: 0) > 0 -> {
+                            val order = j.optJSONArray("orders")?.optString(0) ?: ""
+                            if (order.isNotBlank()) "تم تأكيد الطلب تلقائيًا ✅ (رقم الطلب: $order)" else "تم تأكيد الطلب تلقائيًا ✅"
+                        }
+                        else -> "وصلت للموقع ولم يوجد طلب مطابق: تأكد أن المبلغ والرقم نفس الطلب، وأن وقت العملية ليس قبل الطلب بأكثر من 10 دقائق"
                     }
                 } catch (e: Exception) { "وصلت للموقع" }
                 callback?.invoke(true, detail)

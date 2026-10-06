@@ -1,6 +1,9 @@
 name: Build APK
 
 # يشتغل تلقائي مع أي push على main، وكمان ينفع تشغله يدوي من تبويب Actions
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main, master ]
@@ -42,11 +45,19 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Build debug APK
-        run: gradle assembleDebug
+      - name: Build signed release APK
+        run: gradle assembleRelease -PappVersionCode=${{ github.run_number }}
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: sms-payment-apk-${{ github.run_number }}
+          path: app/build/outputs/apk/release/app-release.apk
+
+      # كل نسخة تُنشر كـ Release (build-N) والتطبيق يفحصها ويحدّث نفسه تلقائيًا
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: SMS Payment 1.0.${{ github.run_number }}
+          files: app/build/outputs/apk/release/app-release.apk

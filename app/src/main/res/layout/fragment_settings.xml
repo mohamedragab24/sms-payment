@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_screen" android:layoutDirection="rtl">
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الإعدادات" android:textSize="23sp" android:textStyle="bold" android:textColor="#19324A"/>
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="تحكم في صلاحيات الرسائل وربط حساب Telegram" android:textSize="13sp" android:textColor="#718294" android:layout_marginTop="4dp" android:layout_marginBottom="14dp"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الإعدادات" android:textSize="23sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="تحكم في صلاحيات الرسائل وربط حساب Telegram" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="4dp" android:layout_marginBottom="14dp"/>
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_card">
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="صلاحيات التطبيق" android:textSize="18sp" android:textStyle="bold" android:textColor="#19324A"/>
-<TextView android:id="@+id/tvPermissionStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="الصلاحيات" android:textColor="#718294" android:layout_marginTop="7dp"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="صلاحيات التطبيق" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+<TextView android:id="@+id/tvPermissionStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="الصلاحيات" android:textColor="@color/text_secondary" android:layout_marginTop="7dp"/>
 <Button android:id="@+id/btnGrantPermissions" android:layout_width="match_parent" android:layout_height="48dp" android:text="منح صلاحيات قراءة الرسائل" android:textColor="#FFFFFF" android:background="@drawable/bg_primary_button" android:layout_marginTop="10dp"/>
 </LinearLayout>
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_card" android:layout_marginTop="12dp">
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الربط مع موقع فهمني (تأكيد الدفع تلقائيًا)" android:textSize="18sp" android:textStyle="bold" android:textColor="#19324A"/>
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الرسائل تُرسل مباشرة للموقع. إعدادات تليجرام أسفله نسخة احتياطية فقط." android:textSize="12sp" android:textColor="#718294" android:layout_marginTop="3dp"/>
-<EditText android:id="@+id/etIngestUrl" android:layout_width="match_parent" android:layout_height="52dp" android:hint="رابط الاستقبال" android:inputType="textUri" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="12dp" android:textDirection="ltr"/>
-<EditText android:id="@+id/etIngestSecret" android:layout_width="match_parent" android:layout_height="52dp" android:hint="كلمة السر (PAYMENT_INGEST_SECRET)" android:inputType="textPassword" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="8dp"/>
-<Button android:id="@+id/btnCheckUpdate" android:layout_width="match_parent" android:layout_height="48dp" android:text="🔄 التحقق من وجود تحديث" android:textColor="#2196D2" android:background="@drawable/bg_secondary_button" android:layout_marginTop="8dp"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الربط مع موقع فهمني (تأكيد الدفع تلقائيًا)" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="الرسائل تُرسل مباشرة للموقع. إعدادات تليجرام أسفله نسخة احتياطية فقط." android:textSize="12sp" android:textColor="@color/text_secondary" android:layout_marginTop="3dp"/>
+<EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint" android:id="@+id/etIngestUrl" android:layout_width="match_parent" android:layout_height="52dp" android:hint="رابط الاستقبال" android:inputType="textUri" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="12dp" android:textDirection="ltr"/>
+<EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint" android:id="@+id/etIngestSecret" android:layout_width="match_parent" android:layout_height="52dp" android:hint="كلمة السر (PAYMENT_INGEST_SECRET)" android:inputType="textPassword" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="8dp"/>
+<Button android:id="@+id/btnCheckUpdate" android:layout_width="match_parent" android:layout_height="48dp" android:text="🔄 التحقق من وجود تحديث" android:textColor="@color/brand_text" android:background="@drawable/bg_secondary_button" android:layout_marginTop="8dp"/>
 <Button android:id="@+id/btnSaveIngest" android:layout_width="match_parent" android:layout_height="48dp" android:text="حفظ إعدادات الموقع" android:textColor="#FFFFFF" android:background="@drawable/bg_primary_button" android:layout_marginTop="10dp"/>
 </LinearLayout>
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_card" android:layout_marginTop="12dp">
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ربط Telegram" android:textSize="18sp" android:textStyle="bold" android:textColor="#19324A"/>
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بيانات الربط مؤمنة بعد الحفظ" android:textSize="12sp" android:textColor="#718294" android:layout_marginTop="3dp"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ربط Telegram" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بيانات الربط مؤمنة بعد الحفظ" android:textSize="12sp" android:textColor="@color/text_secondary" android:layout_marginTop="3dp"/>
 </LinearLayout>
-<Button android:id="@+id/btnEditTelegram" android:layout_width="wrap_content" android:layout_height="45dp" android:text="🔒 تعديل" android:textColor="#2196D2" android:background="@drawable/bg_secondary_button"/>
+<Button android:id="@+id/btnEditTelegram" android:layout_width="wrap_content" android:layout_height="45dp" android:text="🔒 تعديل" android:textColor="@color/brand_text" android:background="@drawable/bg_secondary_button"/>
 </LinearLayout>
-<EditText android:id="@+id/etBotToken" android:layout_width="match_parent" android:layout_height="52dp" android:hint="Bot Token" android:inputType="textPassword" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="12dp"/>
-<EditText android:id="@+id/etChatId" android:layout_width="match_parent" android:layout_height="52dp" android:hint="Chat ID" android:inputType="text" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="8dp"/>
+<EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint" android:id="@+id/etBotToken" android:layout_width="match_parent" android:layout_height="52dp" android:hint="Bot Token" android:inputType="textPassword" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="12dp"/>
+<EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint" android:id="@+id/etChatId" android:layout_width="match_parent" android:layout_height="52dp" android:hint="Chat ID" android:inputType="text" android:background="@drawable/bg_search" android:padding="12dp" android:layout_marginTop="8dp"/>
 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="10dp">
-<TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="تفعيل إرسال الرسائل" android:textColor="#19324A" android:textStyle="bold"/>
+<TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="تفعيل إرسال الرسائل" android:textColor="@color/text_primary" android:textStyle="bold"/>
 <Switch android:id="@+id/switchEnabled" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 </LinearLayout>
 <Button android:id="@+id/btnTestTelegram" android:layout_width="match_parent" android:layout_height="48dp" android:text="🧪 فتح صفحة اختبار الدفع" android:textColor="#FFFFFF" android:background="@drawable/bg_primary_button" android:layout_marginTop="8dp"/>

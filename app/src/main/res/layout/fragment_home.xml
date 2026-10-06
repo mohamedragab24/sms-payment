@@ -9,48 +9,48 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:background="@drawable/bg_card" android:gravity="center_vertical" android:padding="18dp">
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="أهلاً بك مجدداً" android:textColor="#2196D2" android:textSize="14sp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="mohamed ragab" android:textColor="#19324A" android:textSize="26sp" android:textStyle="bold" android:layout_marginTop="3dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="لوحة إدارة بوابة الدفع" android:textColor="#718294" android:textSize="13sp" android:layout_marginTop="4dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="أهلاً بك مجدداً" android:textColor="@color/brand_text" android:textSize="14sp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="mohamed ragab" android:textColor="@color/text_primary" android:textSize="26sp" android:textStyle="bold" android:layout_marginTop="3dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="لوحة إدارة بوابة الدفع" android:textColor="@color/text_secondary" android:textSize="13sp" android:layout_marginTop="4dp"/>
             </LinearLayout>
-            <TextView android:layout_width="48dp" android:layout_height="48dp" android:gravity="center" android:text="✓" android:textColor="#2196D2" android:textSize="24sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
+            <TextView android:layout_width="48dp" android:layout_height="48dp" android:gravity="center" android:text="✓" android:textColor="@color/brand_text" android:textSize="24sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
         </LinearLayout>
 
         <com.example.smstotelegram.ui.PaymentOrbitView android:layout_width="match_parent" android:layout_height="315dp" android:layout_marginTop="12dp" android:background="@drawable/bg_card"/>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ملخص الحساب" android:textSize="21sp" android:textStyle="bold" android:textColor="#19324A" android:layout_marginTop="18dp"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اضغط على أي بطاقة لعرض التفاصيل والبحث والفلترة" android:textSize="13sp" android:textColor="#718294" android:layout_marginTop="3dp" android:layout_marginBottom="10dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ملخص الحساب" android:textSize="21sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="18dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اضغط على أي بطاقة لعرض التفاصيل والبحث والفلترة" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="3dp" android:layout_marginBottom="10dp"/>
 
         <androidx.cardview.widget.CardView android:id="@+id/cardAccounts" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="18dp" app:cardElevation="0dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="#FFFFFF">
-                <TextView android:layout_width="50dp" android:layout_height="50dp" android:gravity="center" android:text="#" android:textColor="#2196D2" android:textSize="22sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="@color/app_surface">
+                <TextView android:layout_width="50dp" android:layout_height="50dp" android:gravity="center" android:text="#" android:textColor="@color/brand_text" android:textSize="22sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="أرقام الحسابات المتاحة" android:textColor="#19324A" android:textSize="16sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اضغط لعرض كل حساب وتفاصيل عملياته" android:textColor="#718294" android:textSize="12sp" android:layout_marginTop="3dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="أرقام الحسابات المتاحة" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="اضغط لعرض كل حساب وتفاصيل عملياته" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginTop="3dp"/>
                 </LinearLayout>
-                <TextView android:id="@+id/tvTotalNumbers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#2196D2" android:textSize="28sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvTotalNumbers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/brand_text" android:textSize="28sp" android:textStyle="bold"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView android:id="@+id/cardMessages" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="18dp" app:cardElevation="0dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="#FFFFFF">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="@color/app_surface">
                 <TextView android:layout_width="50dp" android:layout_height="50dp" android:gravity="center" android:text="✉" android:textColor="#FF7043" android:textSize="22sp" android:textStyle="bold" android:background="@drawable/bg_icon_orange"/>
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إجمالي الرسائل" android:textColor="#19324A" android:textSize="16sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بحث وفلترة حسب الحساب أو المرسل" android:textColor="#718294" android:textSize="12sp" android:layout_marginTop="3dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إجمالي الرسائل" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بحث وفلترة حسب الحساب أو المرسل" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginTop="3dp"/>
                 </LinearLayout>
                 <TextView android:id="@+id/tvTotalMessages" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#FF7043" android:textSize="28sp" android:textStyle="bold"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView android:id="@+id/cardProviders" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" app:cardCornerRadius="18dp" app:cardElevation="0dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="#FFFFFF">
-                <TextView android:layout_width="50dp" android:layout_height="50dp" android:gravity="center" android:text="⌁" android:textColor="#2196D2" android:textSize="24sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="17dp" android:background="@color/app_surface">
+                <TextView android:layout_width="50dp" android:layout_height="50dp" android:gravity="center" android:text="⌁" android:textColor="@color/brand_text" android:textSize="24sp" android:textStyle="bold" android:background="@drawable/bg_icon_blue"/>
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="مزودو الخدمة" android:textColor="#19324A" android:textSize="16sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="عرض جميع المزودين وأرقامهم المرتبطة" android:textColor="#718294" android:textSize="12sp" android:layout_marginTop="3dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="مزودو الخدمة" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="عرض جميع المزودين وأرقامهم المرتبطة" android:textColor="@color/text_secondary" android:textSize="12sp" android:layout_marginTop="3dp"/>
                 </LinearLayout>
-                <TextView android:id="@+id/tvTotalProviders" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#2196D2" android:textSize="28sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvTotalProviders" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/brand_text" android:textSize="28sp" android:textStyle="bold"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

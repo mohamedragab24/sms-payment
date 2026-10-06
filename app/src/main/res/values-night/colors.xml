@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_bg">#0F1A24</color>
+    <color name="app_surface">#1A2733</color>
+    <color name="app_stroke">#2B3C4B</color>
+    <color name="text_primary">#EAF2F8</color>
+    <color name="text_secondary">#A9B8C6</color>
+    <color name="text_hint">#8296A8</color>
+    <color name="text_muted">#8FA1B2</color>
+    <color name="text_body">#C9D6E0</color>
+    <color name="brand_text">#5BB8EA</color>
+    <color name="chip_bg">#16384A</color>
+    <color name="chip_stroke">#2A5A73</color>
+    <color name="warn_bg">#3A2A22</color>
+    <color name="result_ok">#66BB6A</color>
+    <color name="result_warn">#FFA726</color>
+    <color name="result_err">#EF5350</color>
+    <color name="result_info">#B0BEC5</color>
+</resources>

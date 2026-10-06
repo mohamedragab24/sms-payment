@@ -33,6 +33,7 @@ object PaymentIngest {
         attempt(url.trim(), secret.trim(), text, 1, callback)
     }
 
+
     private fun attempt(url: String, secret: String, text: String, n: Int, callback: ((Boolean, String?) -> Unit)?) {
         val body = JSONObject().put("text", text).toString().toRequestBody(JSON)
         val request = Request.Builder()

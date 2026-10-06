@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:clickable="true" android:focusable="true" app:cardCornerRadius="18dp" app:cardElevation="0dp">
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp" android:background="#FFFFFF">
-<TextView android:layout_width="48dp" android:layout_height="48dp" android:gravity="center" android:text="P" android:textColor="#2196D2" android:textStyle="bold" android:textSize="18sp" android:background="@drawable/bg_icon_blue"/>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp" android:background="@color/app_surface">
+<TextView android:layout_width="48dp" android:layout_height="48dp" android:gravity="center" android:text="P" android:textColor="@color/brand_text" android:textStyle="bold" android:textSize="18sp" android:background="@drawable/bg_icon_blue"/>
 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-<TextView android:id="@+id/tvProviderName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:textColor="#19324A"/>
-<TextView android:id="@+id/tvProviderPattern" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:textColor="#718294" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/tvSenderId" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#8A99A6" android:layout_marginTop="2dp"/>
+<TextView android:id="@+id/tvProviderName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+<TextView android:id="@+id/tvProviderPattern" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="4dp"/>
+<TextView android:id="@+id/tvSenderId" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_muted" android:layout_marginTop="2dp"/>
 </LinearLayout>
 <TextView android:id="@+id/tvMessageCount" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="13sp" android:textStyle="bold" android:textColor="#FF7043"/>
 </LinearLayout>

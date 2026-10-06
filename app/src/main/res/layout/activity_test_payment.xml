@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F9FC"
+    android:background="@color/app_bg"
     android:fillViewport="true"
     android:layoutDirection="rtl">
 
@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="→ رجوع"
-        android:textColor="#2196D2"
+        android:textColor="@color/brand_text"
         android:background="@drawable/bg_secondary_button" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:layout_marginTop="14dp"
         android:gravity="start"
         android:text="🧪 صفحة اختبار الدفع"
-        android:textColor="#19324A"
+        android:textColor="@color/text_primary"
         android:textSize="22sp"
         android:textStyle="bold" />
 
@@ -35,8 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:gravity="start"
-        android:text="ترسل هذه الصفحة عملية دفع تجريبية مباشرة لموقع فهمني. إذا تطابق المبلغ والرقم مع طلب معلّق يُؤكَّد الطلب تلقائيًا ويتفعّل الكورس."
-        android:textColor="#718294"
+        android:text="اكتب نفس الرقم الذي أدخلته في الطلب ونفس المبلغ المطلوب (أي رقم وأي مبلغ). إذا تطابقا مع الطلب يُؤكَّد تلقائيًا ويتفعّل الكورس، وإلا لا يُؤكَّد."
+        android:textColor="@color/text_secondary"
         android:textSize="13sp" />
 
     <LinearLayout
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:text="طريقة الدفع"
-            android:textColor="#19324A"
+            android:textColor="@color/text_primary"
             android:textSize="13sp" />
 
         <Spinner
@@ -59,29 +59,29 @@
             android:layout_width="match_parent"
             android:layout_height="48dp" />
 
-        <EditText
+        <EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint"
             android:id="@+id/etFrom"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_search"
             android:gravity="start|center_vertical"
-            android:hint="الرقم الذي حوّل منه"
+            android:hint="الرقم الذي حوّل منه (نفس رقم الطلب)"
             android:inputType="phone"
             android:padding="12dp" />
 
-        <EditText
+        <EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint"
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_search"
             android:gravity="start|center_vertical"
-            android:hint="المبلغ"
+            android:hint="المبلغ (نفس مبلغ الطلب)"
             android:inputType="numberDecimal"
             android:padding="12dp" />
 
-        <EditText
+        <EditText android:textColor="@color/text_primary" android:textColorHint="@color/text_hint"
             android:id="@+id/etTxId"
             android:layout_width="match_parent"
             android:layout_height="52dp"
@@ -97,8 +97,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="start"
-            android:text="التاريخ والوقت يُكتبان تلقائيًا (وقت الإرسال الآن)"
-            android:textColor="#718294"
+            android:text="التاريخ والوقت يُكتبان تلقائيًا"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
         <Button

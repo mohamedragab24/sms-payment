@@ -5,9 +5,13 @@
         <item name="colorPrimaryDark">#1976B2</item>
         <item name="colorAccent">#FF7043</item>
         <item name="android:fontFamily">sans</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">#F6F9FC</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:windowBackground">@color/app_bg</item>
+        <item name="android:windowLightStatusBar">@bool/light_bars</item>
+        <item name="android:statusBarColor">@color/app_bg</item>
+        <item name="android:navigationBarColor">@color/app_surface</item>
         <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>

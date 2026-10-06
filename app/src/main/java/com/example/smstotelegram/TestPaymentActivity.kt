@@ -1,10 +1,10 @@
 package com.example.smstotelegram
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.smstotelegram.databinding.ActivityTestPaymentBinding
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -33,10 +33,11 @@ class TestPaymentActivity : AppCompatActivity() {
     }
 
     private fun send() {
+        // لازم نفس الرقم الذي أدخلته في الطلب ونفس المبلغ المطلوب (أي رقم وأي مبلغ، حسب طلبك أنت)
         val from = binding.etFrom.text.toString().trim()
         val amount = binding.etAmount.text.toString().trim()
         if (from.isBlank() || amount.isBlank()) {
-            showResult("اكتب الرقم الذي حوّل منه والمبلغ", "#D32F2F")
+            showResult("اكتب نفس الرقم الذي أدخلته في الطلب والمبلغ المطلوب", R.color.result_err)
             return
         }
         val txId = binding.etTxId.text.toString().trim().ifBlank { "TEST" + (100000..999999).random() }
@@ -52,23 +53,23 @@ class TestPaymentActivity : AppCompatActivity() {
         }
 
         binding.btnSend.isEnabled = false
-        showResult("جاري الإرسال للموقع...", "#546E7A")
+        showResult("جاري الإرسال للموقع...", R.color.result_info)
 
         TelegramSender.sendWithResult(this, message) { success, detail ->
             runOnUiThread {
                 binding.btnSend.isEnabled = true
                 when {
-                    success && (detail ?: "").contains("تم تأكيد") -> showResult(detail ?: "تم تأكيد الطلب ✅", "#2E7D32")
-                    success -> showResult(detail ?: "وصلت للموقع", "#EF6C00")
-                    else -> showResult("فشل الإرسال: ${detail ?: "خطأ غير معروف"}", "#D32F2F")
+                    success && (detail ?: "").startsWith("تم تأكيد") -> showResult(detail ?: "تم تأكيد الطلب ✅", R.color.result_ok)
+                    success -> showResult(detail ?: "وصلت للموقع", R.color.result_warn)
+                    else -> showResult("فشل الإرسال: ${detail ?: "خطأ غير معروف"}", R.color.result_err)
                 }
             }
         }
     }
 
-    private fun showResult(text: String, color: String) {
+    private fun showResult(text: String, colorRes: Int) {
         binding.tvResult.visibility = View.VISIBLE
         binding.tvResult.text = text
-        binding.tvResult.setTextColor(Color.parseColor(color))
+        binding.tvResult.setTextColor(ContextCompat.getColor(this, colorRes))
     }
 }

@@ -64,6 +64,9 @@ object PaymentIngest {
                 val detail = try {
                     val j = JSONObject(raw)
                     when {
+                        j.optBoolean("ignored", false) -> "المزود غير مضاف/غير مفعّل في لوحة التحكم: لم تتحول الرسالة لعملية دفع"
+                        j.optBoolean("duplicateTx", false) -> "رقم العملية مستخدم من قبل لنفس طريقة الدفع (عملية مكررة)"
+                        j.optBoolean("rejectedDuplicate", false) -> "تم رفض الطلب: رقم العملية مستخدم من قبل (عملية مكررة)"
                         j.optBoolean("duplicate", false) -> "الرسالة مرسلة من قبل (مكررة)"
                         j.has("parseOk") && !j.optBoolean("parseOk", true) -> "وصلت للموقع لكن لم يستطع قراءة (المبلغ/الرقم/الوقت)"
                         (j.optJSONArray("confirmed")?.length() ?: 0) > 0 -> {

@@ -1,6 +1,9 @@
 package com.example.smstotelegram.ui
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
+import com.example.smstotelegram.PaymentStatusChecker
+import com.example.smstotelegram.SmsParser
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smstotelegram.databinding.ItemMessageBinding
@@ -29,6 +32,21 @@ class MessageAdapter(private var items: List<MessageEntity>) :
         holder.binding.tvSender.text = item.sender
         holder.binding.tvBody.text = item.body
         holder.binding.tvTimestamp.text = dateFormat.format(Date(item.timestamp))
+        holder.binding.btnCheck.setOnClickListener { v ->
+            val ctx = v.context
+            val txId = SmsParser.findTransactionId(item.body).orEmpty()
+            holder.binding.btnCheck.isEnabled = false
+            PaymentStatusChecker.check(ctx, txId, item.providerName) { _, label, detail ->
+                v.post {
+                    holder.binding.btnCheck.isEnabled = true
+                    AlertDialog.Builder(ctx)
+                        .setTitle("حالة العملية: $label")
+                        .setMessage(if (detail.isBlank()) "رقم العملية: ${txId.ifBlank { "غير متوفر" }}" else detail)
+                        .setPositiveButton("حسنًا", null)
+                        .show()
+                }
+            }
+        }
     }
 
     override fun getItemCount() = items.size

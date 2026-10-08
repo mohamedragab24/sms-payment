@@ -6,5 +6,6 @@
 <TextView android:id="@+id/tvTimestamp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textColor="@color/text_muted"/>
 </LinearLayout>
 <TextView android:id="@+id/tvBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:textSize="14sp" android:textColor="@color/text_body" android:lineSpacingExtra="2dp"/>
+<Button android:id="@+id/btnCheck" style="?android:attr/borderlessButtonStyle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="تحقق من حالة العملية" android:textSize="12sp"/>
 </LinearLayout>
 </androidx.cardview.widget.CardView>

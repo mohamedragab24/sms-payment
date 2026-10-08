@@ -18,6 +18,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // التقاط أي انهيار وعرض سببه عند الفتح التالي
+        ErrorLog.install(this)
+        ErrorLog.takePendingCrash(this)?.let {
+            ErrorLog.record(this, it.where, Explained(it.title, it.cause, it.fix, it.technical))
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

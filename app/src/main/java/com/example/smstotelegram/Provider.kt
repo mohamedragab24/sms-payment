@@ -10,5 +10,10 @@ data class Provider(
     @SerializedName(value = "recipientNumber", alternate = ["senderPattern"])
     val recipientNumber: String,
     // اسم/رقم المرسل كما يظهر في الرسائل (مثال: VF-Cash) - اختياري
-    val senderId: String? = null
+    val senderId: String? = null,
+    // طريقة الدفع (نوع الخدمة): محفظة إلكترونية / إنستا باي / تيلدا / بطاقة بنكية / تحويل بنكي
+    val method: String = ""
 )
+
+/** أنواع طريقة الدفع المتاحة عند إضافة مزود خدمة (نفس مجموعات المنصة). */
+val PAYMENT_METHODS = listOf("محفظة إلكترونية", "إنستا باي", "تيلدا", "بطاقة بنكية", "تحويل بنكي")

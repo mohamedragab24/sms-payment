@@ -97,6 +97,10 @@ class MessagesFragment : Fragment() {
         val nameInput = EditText(context).apply { hint = "اسم مزود الخدمة (مثال: فودافون كاش)" }
         val recipientInput = EditText(context).apply { hint = "رقم المستلم / رقم الحساب"; inputType = android.text.InputType.TYPE_CLASS_PHONE }
         val senderInput = EditText(context).apply { hint = "اسم المرسل المسموح فقط (مثال: VF-Cash)" }
+        val methodSpinner = android.widget.Spinner(context).apply {
+            adapter = android.widget.ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, com.example.smstotelegram.PAYMENT_METHODS)
+        }
+        layout.addView(methodSpinner)
         layout.addView(nameInput)
         layout.addView(senderInput)
         layout.addView(recipientInput)
@@ -112,7 +116,7 @@ class MessagesFragment : Fragment() {
                     Toast.makeText(context, "لازم تملأ اسم المزود ورقم المستلم واسم المرسل المسموح", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
-                val provider = Provider(name = name, recipientNumber = recipient, senderId = sender)
+                val provider = Provider(name = name, recipientNumber = recipient, senderId = sender, method = methodSpinner.selectedItem.toString())
                 Prefs.addProvider(context, provider)
                 loadProviders()
                 viewLifecycleOwner.lifecycleScope.launch {

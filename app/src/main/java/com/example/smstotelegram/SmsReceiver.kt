@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        ErrorLog.install(context)
         if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION || !Prefs.isEnabled(context)) return
         val providers = Prefs.getProviders(context)
         if (providers.isEmpty()) return
@@ -45,7 +46,8 @@ class SmsReceiver : BroadcastReceiver() {
             append("المبلغ: ${formatAmount(amount)}\n")
             append("تاريخ العملية: $operationDate\n")
             append("من رقم: $fromNumber\n")
-            append("طريقة الدفع: ${provider.name}")
+            append("مزود الخدمة: ${provider.name}")
+            if (provider.method.isNotBlank()) append("\nطريقة الدفع: ${provider.method}")
         }
         TelegramSender.send(appContext, formatted)
 
@@ -56,6 +58,11 @@ class SmsReceiver : BroadcastReceiver() {
                     MessageEntity(providerId = provider.id, providerName = provider.name, sender = sender,
                         recipientNumber = account, amount = amount, body = body, timestamp = System.currentTimeMillis())
                 )
+            } catch (e: Exception) {
+                ErrorLog.record(appContext, "حفظ الرسالة في قاعدة بيانات الهاتف",
+                    Explained("تعذّر حفظ الرسالة محليًا", "خطأ في قاعدة بيانات التطبيق (مساحة ممتلئة أو ملف تالف).",
+                        "حرّر مساحة على الهاتف، ولو تكرر امسح بيانات التطبيق وأعد إعداده. (الإرسال للموقع لا يتأثر)", "${e.javaClass.simpleName}: ${e.message}".take(200)),
+                    notify = true)
             } finally {
                 pending.finish()
             }

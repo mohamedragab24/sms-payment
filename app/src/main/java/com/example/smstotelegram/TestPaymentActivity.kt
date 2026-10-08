@@ -49,7 +49,7 @@ class TestPaymentActivity : AppCompatActivity() {
             append("المبلغ: $amount\n")
             append("تاريخ العملية: $now\n")
             append("من رقم: $from\n")
-            append("طريقة الدفع: ${binding.spMethod.selectedItem}")
+            append("مزود الخدمة: ${binding.spMethod.selectedItem}")
         }
 
         binding.btnSend.isEnabled = false
